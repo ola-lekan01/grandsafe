@@ -44,7 +44,7 @@ To get started with grandsafe, you will need to clone this repository to your lo
 
      ```properties
        # src/main/resources/application.properties
-      spring.datasource.url=jdbc:mysql://localhost:5432/grandsafe
+      spring.datasource.url=jdbc:postgresql://localhost:5432/grandsafe
       spring.datasource.username=<YOUR_DB_USERNAME>
       spring.datasource.password=<YOUR_DB_PASSWORD>
      ```
