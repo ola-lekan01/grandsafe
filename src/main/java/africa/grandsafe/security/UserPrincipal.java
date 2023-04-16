@@ -27,7 +27,7 @@ public class UserPrincipal implements UserDetails {
         List<GrantedAuthority> authorities = getAuthorities(user);
         return new UserPrincipal(
                 user.getId(),
-                user.getFirsName(),
+                user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
                 user.getPassword(),

@@ -42,15 +42,12 @@ public class AuthenticationController {
                     .verifyUser(vToken.getToken());
 
             Link verificationLink = linkTo(methodLinkBuilder).withRel("user-verification");
-
-//            user.add(verificationLink);
-
             emailService.sendEmail(userRequest.getEmail(),
-                    buildEmail(user.getFirsName(), verificationLink));
+                    buildEmail(user.getFirstName(), verificationLink.getHref()));
 
             return new ResponseEntity<>(user, HttpStatus.CREATED);
-        } catch (AuthException | UnsupportedEncodingException e) {
-            return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (AuthException | UnsupportedEncodingException exception) {
+            return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -60,9 +57,9 @@ public class AuthenticationController {
             authenticationService.confirmVerificationToken(token);
             return new ResponseEntity<>(new ApiResponse
                     (true, "User is successfully verified"), HttpStatus.OK);
-        } catch (TokenException e) {
+        } catch (TokenException exception) {
             return new ResponseEntity<>(new ApiResponse
-                    (false, e.getMessage()), HttpStatus.BAD_REQUEST);
+                    (false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }
