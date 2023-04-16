@@ -22,7 +22,7 @@ public class AppUser extends RepresentationModel<AppUser>{
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @Column(nullable = false)
-    private String firsName;
+    private String firstName;
     private String lastName;
     @Column(nullable = false)
     private String email;
