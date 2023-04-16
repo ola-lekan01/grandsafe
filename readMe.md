@@ -1,6 +1,6 @@
 # grandsafe
 
-Thullo is a digital platform that helps individuals and organizations manage their projects effectively. It provides a range of tools and features that make it easy to plan, track, and collaborate on various tasks and deliverables.<br>
+Thullo is a eletronic digital platform that helps individuals manage their funds more effectively. It provides a range of tools and features that make it easy to save, spend and manage funds from thier account.<br>
 ***The API documentation is hosted [here]()***
 <br>
 ## Technologies Used
