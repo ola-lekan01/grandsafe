@@ -1,11 +1,14 @@
 package africa.grandsafe.data.controller;
 
+import africa.grandsafe.data.dtos.request.LoginRequest;
 import africa.grandsafe.data.dtos.request.UserRequest;
 import africa.grandsafe.data.dtos.response.ApiResponse;
+import africa.grandsafe.data.dtos.response.JwtTokenResponse;
 import africa.grandsafe.data.models.AppUser;
 import africa.grandsafe.data.models.Token;
 import africa.grandsafe.exceptions.AuthException;
 import africa.grandsafe.exceptions.TokenException;
+import africa.grandsafe.exceptions.UserException;
 import africa.grandsafe.service.AuthenticationService;
 import africa.grandsafe.service.EmailService;
 import jakarta.validation.Valid;
@@ -60,6 +63,17 @@ public class AuthenticationController {
         } catch (TokenException exception) {
             return new ResponseEntity<>(new ApiResponse
                     (false, exception.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        try {
+            JwtTokenResponse authenticationDetail = authenticationService.login(loginRequest);
+            return new ResponseEntity<>(new ApiResponse(true, "User is successfully logged in",
+                    authenticationDetail ), HttpStatus.OK);
+        }catch (UserException exception){
+            return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

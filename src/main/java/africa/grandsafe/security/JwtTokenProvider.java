@@ -3,11 +3,13 @@ package africa.grandsafe.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +17,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenProvider {
-    @Value("${TOKEN-EXPIRATION}")
+    @Value("${TOKEN_EXPIRATION}")
     private long tokenExpiration;
 
     @Value("${JWT_SECRET_KEY}")
@@ -25,14 +27,20 @@ public class JwtTokenProvider {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, email);
     }
-
-    private String createToken(Map<String, Object> claims, String subject) {
+    public String createToken(Map<String, Object> extraClaims,
+                                String subject){
         return Jwts.builder()
-                .setClaims(claims).setSubject(subject)
+                .setClaims(extraClaims)
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-//                // Jwt expiration time is 10hr after jwt is issued
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
-                .signWith(SignatureAlgorithm.HS256, tokenSecret).compact();
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    private Key getSignInKey() {
+        byte [] key = Decoders.BASE64.decode(tokenSecret);
+        return Keys.hmacShaKeyFor(key);
     }
 
     public String extractEmail(String jwtToken) {
@@ -44,9 +52,12 @@ public class JwtTokenProvider {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaim(String jwtToken) {
-        return Jwts.parser().setSigningKey(tokenSecret)
-                .parseClaimsJws(jwtToken).getBody();
+    private Claims extractAllClaim(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public boolean validateToken(String token, UserDetails user) {
@@ -60,10 +71,5 @@ public class JwtTokenProvider {
 
     private Date extractExpirationDate(String token) {
         return extractClaim(token, Claims::getExpiration);
-    }
-
-    public String createToken(Authentication authentication) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        return generateToken(userPrincipal.getEmail());
     }
 }
