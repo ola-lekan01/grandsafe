@@ -21,12 +21,11 @@ public class EmailServiceImpl implements EmailService {
         try{
             MimeMessage mailMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mailMessage, "utf-8");
-            mimeMessageHelper.setSubject("Kindly confirm your email address");
+            mimeMessageHelper.setSubject("[GrandSafe Wallet] GrandSafe Account Verification");
             mimeMessageHelper.setTo(toMail);
             mimeMessageHelper.setFrom("lekan.sofuyi01@gmail.com");
             mimeMessageHelper.setText(email, true);
             javaMailSender.send(mailMessage);
-            System.out.println("mail sent successfully");
         } catch(MessagingException | MailException exception){
             throw new GenericException(exception.getMessage());
         }
