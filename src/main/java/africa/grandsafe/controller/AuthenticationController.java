@@ -1,9 +1,12 @@
-package africa.grandsafe.data.controller;
+package africa.grandsafe.controller;
 
 import africa.grandsafe.data.dtos.request.LoginRequest;
+import africa.grandsafe.data.dtos.request.PasswordRequest;
+import africa.grandsafe.data.dtos.request.TokenRefreshRequest;
 import africa.grandsafe.data.dtos.request.UserRequest;
 import africa.grandsafe.data.dtos.response.ApiResponse;
 import africa.grandsafe.data.dtos.response.JwtTokenResponse;
+import africa.grandsafe.data.dtos.response.TokenResponse;
 import africa.grandsafe.data.models.AppUser;
 import africa.grandsafe.data.models.Token;
 import africa.grandsafe.exceptions.AuthException;
@@ -23,6 +26,7 @@ import java.util.UUID;
 
 import static africa.grandsafe.data.enums.TokenType.VERIFICATION;
 import static africa.grandsafe.utils.EmailTemplate.buildEmail;
+import static africa.grandsafe.utils.EmailTemplate.resetPassword;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -74,6 +78,62 @@ public class AuthenticationController {
                     authenticationDetail ), HttpStatus.OK);
         }catch (UserException exception){
             return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/password/reset-token")
+    public ResponseEntity<?> createResetPasswordToken(@RequestParam("email") String email) {
+        try {
+            TokenResponse passwordResetToken = authenticationService.createPasswordResetTokenForUser(email);
+            AppUser user = authenticationService.internalFindUserByEmail(email);
+
+            ResponseEntity<ApiResponse> methodLinkBuilder = methodOn(AuthenticationController.class)
+                    .verifyToken(passwordResetToken.getToken());
+
+            Link verificationLink = linkTo(methodLinkBuilder).withRel("password-reset");
+            emailService.sendEmail(email,
+                    resetPassword(user.getFirstName(), verificationLink.getHref()));
+
+            return new ResponseEntity<>(passwordResetToken, HttpStatus.CREATED);
+        } catch (AuthException | UserException e) {
+            return new ResponseEntity<>(new ApiResponse
+                    (false, e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/verify-reset-password-token")
+    public ResponseEntity<ApiResponse> verifyToken(@RequestParam("token") String token) {
+        try {
+            authenticationService.confirmResetPasswordToken(token);
+            return new ResponseEntity<>(new ApiResponse
+                    (true, "Token Verified Successfully"), HttpStatus.OK);
+        } catch (TokenException exception) {
+            return new ResponseEntity<>(new ApiResponse
+                    (false, exception.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/password/reset")
+    public ResponseEntity<ApiResponse> updatePassword(@RequestParam("token") String token,
+                                                      @Valid @RequestBody PasswordRequest passwordRequest) {
+        try {
+            passwordRequest.setToken(token);
+            authenticationService.saveResetPassword(passwordRequest);
+            return new ResponseEntity<>(new ApiResponse
+                    (true, "User password is successfully updated"), HttpStatus.OK);
+        } catch (AuthException | TokenException e) {
+            return new ResponseEntity<>(new ApiResponse
+                    (false, e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+        try {
+            JwtTokenResponse jwtTokenResponse = authenticationService.refreshToken(request);
+            return new ResponseEntity<>(jwtTokenResponse, HttpStatus.OK);
+        } catch (TokenException e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

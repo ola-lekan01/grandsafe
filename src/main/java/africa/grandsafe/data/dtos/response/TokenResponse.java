@@ -14,5 +14,4 @@ public class TokenResponse extends RepresentationModel<TokenResponse> {
     private String token;
     private  String tokenType;
     private LocalDateTime expiryDate;
-
 }

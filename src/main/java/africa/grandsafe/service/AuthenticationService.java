@@ -20,8 +20,8 @@ public interface AuthenticationService {
     Token createVerificationToken(AppUser user, String token, String tokenType);
     JwtTokenResponse login(LoginRequest loginRequest) throws UserException;
     void saveResetPassword(PasswordRequest passwordRequest) throws AuthException, TokenException;
-    TokenResponse resendVerificationToken(String token) throws TokenException;
-    TokenResponse resendResetPasswordToken(String token) throws TokenException;
     TokenResponse createPasswordResetTokenForUser(String email) throws AuthException;
     JwtTokenResponse refreshToken(TokenRefreshRequest request) throws TokenException;
+    AppUser internalFindUserByEmail(String email) throws UserException;
+    void confirmResetPasswordToken(String token) throws TokenException;
 }

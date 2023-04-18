@@ -29,7 +29,7 @@ public class AppUser extends RepresentationModel<AppUser>{
     private String phoneNumber;
     private String imageUrl;
     private String bio;
-    private Boolean emailVerified;
+    private Boolean emailVerified = false;
     @JsonIgnore
     private String password;
     private Role role;
