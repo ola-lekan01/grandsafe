@@ -12,7 +12,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -33,7 +35,13 @@ public class AppUser extends RepresentationModel<AppUser>{
     @JsonIgnore
     private String password;
     private Role role;
-
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Card> cards;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "transaction_id")
+    private List<Transaction> transaction;
+    @OneToOne @JoinColumn(name = "account_id")
+    private Account account;
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;

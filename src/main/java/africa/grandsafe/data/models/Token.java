@@ -50,7 +50,7 @@ public class Token extends RepresentationModel<Token> {
     }
 
     private LocalDateTime calculateExpiryDate(){
-        return LocalDateTime.now().plusHours(EXPIRATION);
+        return LocalDateTime.now().plusMinutes(EXPIRATION);
     }
 
     public void updateToken(String code){
@@ -72,4 +72,3 @@ public class Token extends RepresentationModel<Token> {
         this.expiryDate = calculateExpiryDate();
     }
 }
-

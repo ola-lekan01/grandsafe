@@ -136,4 +136,24 @@ public class AuthenticationController {
             return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/verification/resend-token")
+    public ResponseEntity<?> resendVerificationToken(@RequestParam("email") String email) {
+        try {
+            TokenResponse vToken = authenticationService.resendVerificationToken(email);
+            AppUser user = authenticationService.internalFindUserByEmail(email);
+            ResponseEntity<ApiResponse> methodLinkBuilder = methodOn(AuthenticationController.class)
+                    .verifyUser(vToken.getToken());
+
+            Link verificationLink = linkTo(methodLinkBuilder).withRel("user-verification");
+
+            emailService.sendEmail(email,
+                    buildEmail(user.getFirstName(), verificationLink.getHref()));
+
+            return new ResponseEntity<>(vToken, HttpStatus.OK);
+        } catch (TokenException | UserException e) {
+            return new ResponseEntity<>(new ApiResponse
+                    (false, e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
