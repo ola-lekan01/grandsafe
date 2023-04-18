@@ -117,21 +117,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return jwtTokenResponse;
     }
 
-    private AppUser internalFindUserByEmail(String email) throws UserException {
+    @Override
+    public AppUser internalFindUserByEmail(String email) throws UserException {
         return userRepository.findByEmailIgnoreCase(email).orElseThrow(
                 () -> new UserException(format("user not found with email %s", email)));
     }
 
     @Override
-    public TokenResponse resendVerificationToken(String token) throws TokenException {
-        return modelMapper.map(generateNewToken(token, VERIFICATION.toString()), TokenResponse.class) ;
+    public void confirmResetPasswordToken(String token) throws TokenException {
+        Token vToken = getAToken(token, PASSWORD_RESET.toString());
+        if (!isValidToken(vToken.getExpiryDate()))
+            throw new TokenException("Token has expired");
     }
-
-    @Override
-    public TokenResponse resendResetPasswordToken(String verificationToken) throws TokenException {
-        return modelMapper.map(generateNewToken(verificationToken, PASSWORD_RESET.toString()), TokenResponse.class) ;
-    }
-
 
     private Token generateNewToken(String token, String tokenType) throws TokenException {
         Token vCode = getAToken(token, tokenType);
