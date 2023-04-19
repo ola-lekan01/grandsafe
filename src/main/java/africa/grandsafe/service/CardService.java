@@ -10,10 +10,9 @@ import java.io.IOException;
 import java.util.List;
 
 public interface CardService {
-    CardResponse addCard(AddCardRequest addCardRequest, UserPrincipal userPrincipal) throws IOException, UserException;
-    List<Card> getAllCards();
+    CardResponse addCard(UserPrincipal userPrincipal, AddCardRequest addCardRequest) throws IOException, UserException;
+    List<Card> getAllCards(UserPrincipal userPrincipal) throws UserException;
     Card getCardById(String id);
-    String updateCard(String cardId, String userId, AddCardRequest updateCardRequest);
-    Object validateCardDetails(AddCardRequest cardDetailsRequest) throws IOException;
-    String deleteCardByUserId(String id, String password);
+    Card updateCard(String cardId, AddCardRequest updateCardRequest);
+    String deleteCardByUserId(String id, UserPrincipal currentUser, String password) throws UserException;
 }
