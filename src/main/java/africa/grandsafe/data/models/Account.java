@@ -26,7 +26,7 @@ public class Account {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
     @OneToOne
-    @JoinColumn(name = "card_name_id")
+    @JoinColumn(name = "card_id")
     private Card cardName;
     @Enumerated(EnumType.STRING)
     private SavingPlan savingPlan;

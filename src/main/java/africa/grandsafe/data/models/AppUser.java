@@ -35,9 +35,9 @@ public class AppUser extends RepresentationModel<AppUser>{
     @JsonIgnore
     private String password;
     private Role role;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Card> cards;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "transaction_id")
     private List<Transaction> transaction;
     @OneToOne @JoinColumn(name = "account_id")

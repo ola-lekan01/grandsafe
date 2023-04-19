@@ -14,6 +14,7 @@ import africa.grandsafe.exceptions.TokenException;
 import africa.grandsafe.exceptions.UserException;
 import africa.grandsafe.service.AuthenticationService;
 import africa.grandsafe.service.EmailService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.Link;
@@ -71,11 +72,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         try {
             JwtTokenResponse authenticationDetail = authenticationService.login(loginRequest);
             return new ResponseEntity<>(new ApiResponse(true, "User is successfully logged in",
-                    authenticationDetail ), HttpStatus.OK);
+                    request.getRequestURL().toString(), authenticationDetail), HttpStatus.OK);
         }catch (UserException exception){
             return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }

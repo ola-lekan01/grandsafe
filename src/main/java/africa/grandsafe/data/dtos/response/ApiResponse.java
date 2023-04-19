@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class ApiResponse {
     private boolean isSuccessful;
     private String message;
+    private String path;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeStamp;
     private Object data;
@@ -25,9 +26,16 @@ public class ApiResponse {
         timeStamp = LocalDateTime.now();
     }
 
+    public ApiResponse(boolean isSuccessful, String message, String path) {
+        this.isSuccessful = isSuccessful;
+        this.message = message;
+        this.path = path;
+        timeStamp = LocalDateTime.now();
+    }
 
-    public ApiResponse(boolean isSuccessful, String message, Object data) {
-        this(isSuccessful, message);
+
+    public ApiResponse(boolean isSuccessful, String message, String path, Object data) {
+        this(isSuccessful, message, path);
         this.data = data;
     }
 }
