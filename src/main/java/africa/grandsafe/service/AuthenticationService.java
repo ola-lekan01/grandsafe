@@ -24,4 +24,5 @@ public interface AuthenticationService {
     JwtTokenResponse refreshToken(TokenRefreshRequest request) throws TokenException;
     AppUser internalFindUserByEmail(String email) throws UserException;
     void confirmResetPasswordToken(String token) throws TokenException;
+    TokenResponse resendVerificationToken(String email) throws UserException;
 }

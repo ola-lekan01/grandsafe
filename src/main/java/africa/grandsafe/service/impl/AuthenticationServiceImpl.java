@@ -130,6 +130,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new TokenException("Token has expired");
     }
 
+    @Override
+    public TokenResponse resendVerificationToken(String email) throws TokenException, UserException {
+        AppUser user = internalFindUserByEmail(email);
+        Optional<Token> token = tokenRepository.findByUser(user);
+
+        if (token.isPresent() && isValidToken(token.get().getExpiryDate()))
+            return modelMapper.map(token.get(), TokenResponse.class);
+
+        else{Token newToken = token.get();
+            newToken.updateToken(UUID.randomUUID().toString(), PASSWORD_RESET.toString());
+            return modelMapper.map(tokenRepository.save(newToken), TokenResponse.class);
+        }
+    }
+
     private Token generateNewToken(String token, String tokenType) throws TokenException {
         Token vCode = getAToken(token, tokenType);
         vCode.updateToken(UUID.randomUUID().toString(), tokenType);
