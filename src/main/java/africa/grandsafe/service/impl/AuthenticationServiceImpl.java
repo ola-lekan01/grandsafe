@@ -57,7 +57,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return saveAUser(user);
     }
 
-    private AppUser saveAUser(AppUser user) {
+    @Override
+    public AppUser saveAUser(AppUser user) {
         return userRepository.save(user);
     }
 
