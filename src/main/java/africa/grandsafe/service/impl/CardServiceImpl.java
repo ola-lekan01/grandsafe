@@ -32,7 +32,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public CardResponse addCard(UserPrincipal userPrincipal, AddCardRequest addCardRequest) throws UserException {
-        if (cardRepository.findByCardNumberIgnoreCase(addCardRequest.getCardNumber()).isEmpty()) throw new GenericException("Card already exists");
+        if (cardRepository.findByCardNumberIgnoreCase(addCardRequest.getCardNumber()).isPresent()) throw new GenericException("Card already exists");
         AppUser user = internalFindUserByEmail(userPrincipal.getEmail());
         Data cardDetails = payStackService.validateCardDetails(addCardRequest);
         Card card = modelMapper.map(addCardRequest, Card.class);

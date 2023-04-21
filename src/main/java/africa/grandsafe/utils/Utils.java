@@ -16,4 +16,13 @@ public class Utils {
     public static boolean isNullOrEmpty(String value) {
         return value == null || value.trim().length() == 0;
     }
+    public static String extractSubstring(String inputStr) {
+        if (inputStr.startsWith("+")) {
+            inputStr = inputStr.substring(1);
+        }
+        if (inputStr.startsWith("0")) {
+            inputStr = inputStr.substring(1);
+        }
+        return inputStr;
+    }
 }

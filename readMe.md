@@ -1,8 +1,8 @@
 # grandsafe
 
-Thullo is a eletronic digital platform that helps individuals manage their funds more effectively. It provides a range of tools and features that make it easy to save, spend and manage funds from thier account.<br>
+grandsafe is a electronic digital platform that helps individuals manage their funds more effectively. It provides a range of tools and features that make it easy to save, spend and manage funds from their account.
+
 ***The API documentation is hosted [here]()***
-<br>
 ## Technologies Used
 - Java (Programming language)
 - Springboot (Framework used to develop the APIs)

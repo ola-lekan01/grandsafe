@@ -30,14 +30,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static africa.grandsafe.data.enums.TokenType.*;
-import static africa.grandsafe.utils.Utils.isNullOrEmpty;
-import static africa.grandsafe.utils.Utils.isValidToken;
+import static africa.grandsafe.utils.Utils.*;
 import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
-
     private final AppUserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
@@ -71,6 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         AppUser user = vToken.getUser();
         user.setEmailVerified(true);
+        user.setWalletNumber(extractSubstring(user.getPhoneNumber()));
         saveAUser(user);
         tokenRepository.delete(vToken);
     }
@@ -188,7 +187,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return token;
         else throw new TokenException("Refresh token was expired. Please make a new sign in request");
     }
-
 
     @Override
     public void saveResetPassword(PasswordRequest request) throws TokenException, AuthException {
