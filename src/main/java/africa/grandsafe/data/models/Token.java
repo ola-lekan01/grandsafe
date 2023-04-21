@@ -20,7 +20,6 @@ import static africa.grandsafe.utils.AppConstants.EXPIRATION;
 @Entity
 @NoArgsConstructor
 public class Token extends RepresentationModel<Token> {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

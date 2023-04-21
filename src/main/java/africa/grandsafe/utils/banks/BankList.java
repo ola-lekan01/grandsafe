@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @ToString
 public class BankList {
-    private List<Data> data;
+    private List<BankListData> data;
     @JsonIgnore
     private boolean status;
     @JsonIgnore private String message;

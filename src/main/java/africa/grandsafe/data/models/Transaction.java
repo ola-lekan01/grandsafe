@@ -29,5 +29,5 @@ public class Transaction {
     private LocalDateTime createdAt;
     @ManyToOne
     @JoinColumn(name = "app_user_id")
-    private AppUser user;
+    private AppUser appUser;
 }

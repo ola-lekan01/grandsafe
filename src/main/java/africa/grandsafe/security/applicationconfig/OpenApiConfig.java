@@ -17,17 +17,16 @@ public class OpenApiConfig {
     Contact lekan = new Contact()
             .name("Lekan Sofuyi")
             .email("lekan.sofuyi@gmail.com")
-            .url("https://github.com/ola-lekan01/Smart-Voting-System");
+            .url("https://github.com/ola-lekan01/grandsafe");
 
 
     @Bean
     public OpenAPI configAPI(){
         return new OpenAPI().info(new Info()
-                .title("Smart Vote API Documentation")
+                .title("GrandSafe Wallet")
                 .version("Version 1.00")
-                .description("Documentation for Smart Voting System")
+                .description("The perfect wallet for your everyday savings")
                 .contact(lekan)
-                .termsOfService("An online voting system software platform " +
-                        "that allows groups to securely conduct votes and elections."));
+                .termsOfService("An online digital wallet !!! "));
     }
 }

@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 
 public interface AuthenticationService {
     AppUser registerNewUserAccount(UserRequest userRequest) throws AuthException, UnsupportedEncodingException;
+    public AppUser saveAUser(AppUser user);
     void confirmVerificationToken(String verificationToken) throws TokenException;
     Token createVerificationToken(AppUser user, String token, String tokenType);
     JwtTokenResponse login(LoginRequest loginRequest) throws UserException;

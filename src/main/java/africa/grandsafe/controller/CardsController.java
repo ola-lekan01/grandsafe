@@ -9,6 +9,7 @@ import africa.grandsafe.exceptions.CardException;
 import africa.grandsafe.exceptions.UserException;
 import africa.grandsafe.security.UserPrincipal;
 import africa.grandsafe.service.CardService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/card")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "BearerAuth")
+
 public class CardsController {
     private final CardService cardService;
 

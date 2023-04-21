@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Data{
+public class BankListData {
     private String name;
     private String code;
     @JsonIgnore

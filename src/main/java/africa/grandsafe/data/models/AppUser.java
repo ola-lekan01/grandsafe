@@ -30,13 +30,13 @@ public class AppUser extends RepresentationModel<AppUser>{
     private String email;
     private String phoneNumber;
     private String imageUrl;
-    private String bio;
     private Boolean emailVerified = false;
     @JsonIgnore
     private String password;
     private Role role;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Card> cards;
+    @JoinColumn(name = "card_id")
+    private Set<Card> card;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "transaction_id")
     private List<Transaction> transaction;
