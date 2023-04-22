@@ -80,6 +80,7 @@ class AuthenticationServiceImplTest {
     }
 
     @Test
+    @DisplayName("User can register new Account when User Email does not exist on the database")
     public void registerNewUserAccount_ShouldRegisterNewUser_WhenUserDoesNotExist() throws AuthException {
 
         // Setting up variables
@@ -112,6 +113,7 @@ class AuthenticationServiceImplTest {
     }
 
     @Test
+    @DisplayName("Authentication Exception should be thrown when User email is already in the Database")
     public void registerNewUserAccount_ShouldThrowAuthException_WhenUserAlreadyExists() {
         // Arrange
         when(userRepositoryMock.existsByEmail(userRequest.getEmail())).thenReturn(true);
@@ -161,7 +163,7 @@ class AuthenticationServiceImplTest {
     @Test
     void whenLoginMethodIsCalled_withNullPassword_NullPointerExceptionIsThrown(){
         LoginRequest loginDto = new LoginRequest();
-        loginDto.setEmail("whalewalker@gmail.com");
+        loginDto.setEmail("test@gmail.com");
         when(userRepositoryMock.findByEmailIgnoreCase(loginDto.getEmail())).thenThrow(new NullPointerException("User password cannot be null"));
         verify(userRepositoryMock, times(0)).findByEmailIgnoreCase(loginDto.getEmail());
     }
