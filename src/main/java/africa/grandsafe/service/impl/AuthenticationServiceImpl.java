@@ -6,7 +6,6 @@ import africa.grandsafe.data.dtos.request.TokenRefreshRequest;
 import africa.grandsafe.data.dtos.request.UserRequest;
 import africa.grandsafe.data.dtos.response.JwtTokenResponse;
 import africa.grandsafe.data.dtos.response.TokenResponse;
-import africa.grandsafe.data.enums.Role;
 import africa.grandsafe.data.models.AppUser;
 import africa.grandsafe.data.models.Token;
 import africa.grandsafe.data.repositories.AppUserRepository;
@@ -29,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
+import static africa.grandsafe.data.enums.Role.USER;
 import static africa.grandsafe.data.enums.TokenType.*;
 import static africa.grandsafe.utils.Utils.*;
 import static java.lang.String.format;
@@ -50,7 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AuthException(String.format("%s is already in use", userRequest.getEmail()));
         }
         AppUser user = modelMapper.map(userRequest, AppUser.class);
-        user.setRole(Role.USER);
+        user.setRole(USER);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return saveAUser(user);
     }
@@ -144,11 +144,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private Token generateNewToken(String token, String tokenType) throws TokenException {
-        Token vCode = getAToken(token, tokenType);
-        vCode.updateToken(UUID.randomUUID().toString(), tokenType);
-        return tokenRepository.save(vCode);
-    }
 
     @Override
     public TokenResponse createPasswordResetTokenForUser(String email) throws AuthException {
