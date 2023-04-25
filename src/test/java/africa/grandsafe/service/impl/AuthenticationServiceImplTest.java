@@ -15,6 +15,7 @@ import africa.grandsafe.exceptions.UserException;
 import africa.grandsafe.security.AppUserDetailService;
 import africa.grandsafe.security.JwtTokenProvider;
 import africa.grandsafe.security.UserPrincipal;
+import africa.grandsafe.utils.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,17 +47,28 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AuthenticationServiceImplTest {
-    @Mock private AppUserRepository userRepositoryMock;
-    @Mock private ModelMapper modelMapperMock;
-    @Mock private PasswordEncoder passwordEncoderMock;
-    @Mock private TokenRepository tokenRepositoryMock;
-    @Mock private AuthenticationManager authenticationManagerMock;
-    @Mock private JwtTokenProvider tokenProviderMock;
-    @Mock private AppUserDetailService appUserDetailServiceMock;
-    @InjectMocks private AuthenticationServiceImpl authenticationServiceMock;
+    @Mock
+    private AppUserRepository userRepositoryMock;
+    @Mock
+    private ModelMapper modelMapperMock;
+    @Mock
+    private PasswordEncoder passwordEncoderMock;
+    @Mock
+    private TokenRepository tokenRepositoryMock;
+    @Mock
+    private AuthenticationManager authenticationManagerMock;
+    @Mock
+    private JwtTokenProvider tokenProviderMock;
+    @Mock
+    private AppUserDetailService appUserDetailServiceMock;
+    @Mock
+    private Utils utilsMock;
+    @InjectMocks
+    private AuthenticationServiceImpl authenticationServiceMock;
     private AppUser mockedUser;
     private UserRequest userRequest;
     private Token token;
+
     @BeforeEach
     void setUp() {
         // Arrange
@@ -77,6 +90,8 @@ class AuthenticationServiceImplTest {
         token = new Token();
         token.setUser(mockedUser);
         token.setToken(UUID.randomUUID().toString());
+        token.setCreatedDate(LocalDateTime.now());
+        token.setExpiryDate(LocalDateTime.now().plusMinutes(10));
     }
 
     @Test
@@ -131,14 +146,11 @@ class AuthenticationServiceImplTest {
         LoginRequest loginRequest = new LoginRequest("test@gmail.com", "pass1234");
         when(userRepositoryMock.findByEmailIgnoreCase("test@gmail.com")).thenReturn(Optional.of(mockedUser));
 
-        TestingAuthenticationToken testingAuthenticationToken = new TestingAuthenticationToken(loginRequest.getEmail(),
-                loginRequest.getPassword());
+        TestingAuthenticationToken testingAuthenticationToken = new TestingAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
         testingAuthenticationToken.setAuthenticated(true);
         testingAuthenticationToken.setDetails(loginRequest);
 
-        when(authenticationManagerMock.authenticate(new UsernamePasswordAuthenticationToken(
-                loginRequest.getEmail(), loginRequest.getPassword())
-        )).thenReturn(testingAuthenticationToken);
+        when(authenticationManagerMock.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()))).thenReturn(testingAuthenticationToken);
         SecurityContextHolder.getContext().setAuthentication(testingAuthenticationToken);
 
         when(userRepositoryMock.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(mockedUser));
@@ -161,7 +173,7 @@ class AuthenticationServiceImplTest {
     }
 
     @Test
-    void whenLoginMethodIsCalled_withNullPassword_NullPointerExceptionIsThrown(){
+    void whenLoginMethodIsCalled_withNullPassword_NullPointerExceptionIsThrown() {
         LoginRequest loginDto = new LoginRequest();
         loginDto.setEmail("test@gmail.com");
         when(userRepositoryMock.findByEmailIgnoreCase(loginDto.getEmail())).thenThrow(new NullPointerException("User password cannot be null"));

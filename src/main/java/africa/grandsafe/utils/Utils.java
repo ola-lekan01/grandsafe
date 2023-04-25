@@ -17,12 +17,13 @@ public class Utils {
         return value == null || value.trim().length() == 0;
     }
     public static String extractSubstring(String inputStr) {
-        if (inputStr.startsWith("+")) {
-            inputStr = inputStr.substring(1);
+        String phoneNumber = inputStr;
+        phoneNumber = phoneNumber.replaceAll("[^0-9]", ""); // remove all non-digit characters
+        if (phoneNumber.startsWith("234")) {
+            phoneNumber = phoneNumber.substring(3); // remove prefix "234"
+        } else if (phoneNumber.startsWith("0")) {
+            phoneNumber = phoneNumber.substring(1); // remove prefix "0"
         }
-        if (inputStr.startsWith("0")) {
-            inputStr = inputStr.substring(1);
-        }
-        return inputStr;
+        return phoneNumber;
     }
 }
