@@ -10,11 +10,17 @@ import africa.grandsafe.security.UserPrincipal;
 import africa.grandsafe.service.AuthenticationService;
 import africa.grandsafe.service.NextOfKinService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
+import static java.lang.String.format;
+
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class NextOfKinServiceImpl implements NextOfKinService {
     private final NextOfKinRepository nextOfKinRepository;
     private final ModelMapper modelMapper;
@@ -23,6 +29,7 @@ public class NextOfKinServiceImpl implements NextOfKinService {
     @Override
     public NextOfKin addNextOfKin(UserPrincipal principal, NextOfKinRequest nextOfKinRequest) throws UserException {
         AppUser appUser = authenticationService.internalFindUserByEmail(principal.getEmail());
+        if (Objects.isNull(appUser)) throw new UserException(format("user not found with email %s", principal.getEmail()));
         return nextOfKinRepository.save(
                 NextOfKin.builder()
                         .fullName(nextOfKinRequest.getFullName())
@@ -48,6 +55,7 @@ public class NextOfKinServiceImpl implements NextOfKinService {
 
     private NextOfKin findByAppUser(String email) throws UserException {
         AppUser user = authenticationService.internalFindUserByEmail(email);
+        if (Objects.isNull(user)) throw new UserException(format("user not found with email %s", email));
         return nextOfKinRepository.findByAppUser(user);
     }
 }

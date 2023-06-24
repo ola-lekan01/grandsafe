@@ -16,7 +16,9 @@ import africa.grandsafe.exceptions.UserException;
 import africa.grandsafe.security.JwtTokenProvider;
 import africa.grandsafe.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +38,7 @@ import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final AppUserRepository userRepository;
     private final ModelMapper modelMapper;
@@ -118,9 +122,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Cacheable("users")
     public AppUser internalFindUserByEmail(String email) throws UserException {
-        return userRepository.findByEmailIgnoreCase(email).orElseThrow(
-                () -> new UserException(format("user not found with email %s", email)));
+        AppUser user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (Objects.isNull(user)) throw new UserException(format("user not found with email %s", email));
+        return user;
     }
 
     @Override

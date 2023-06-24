@@ -15,7 +15,6 @@ import africa.grandsafe.exceptions.UserException;
 import africa.grandsafe.security.AppUserDetailService;
 import africa.grandsafe.security.JwtTokenProvider;
 import africa.grandsafe.security.UserPrincipal;
-import africa.grandsafe.utils.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,8 +60,6 @@ class AuthenticationServiceImplTest {
     private JwtTokenProvider tokenProviderMock;
     @Mock
     private AppUserDetailService appUserDetailServiceMock;
-    @Mock
-    private Utils utilsMock;
     @InjectMocks
     private AuthenticationServiceImpl authenticationServiceMock;
     private AppUser mockedUser;
@@ -228,5 +225,29 @@ class AuthenticationServiceImplTest {
 
         assertThat(tokenArgumentCaptor.getValue()).isNotNull();
         assertThat(tokenArgumentCaptor.getValue().getPassword()).isNotNull();
+    }
+
+    @Test
+    void testInternalFindUserByEmail() throws UserException {
+        // Arrange
+        String email = "user@example.com";
+        AppUser expectedUser = new AppUser();
+        expectedUser.setEmail("test@example.com");
+        when(userRepositoryMock.findByEmailIgnoreCase(email)).thenReturn(Optional.of(expectedUser));
+
+        // Act
+        AppUser actualUser = authenticationServiceMock.internalFindUserByEmail(email);
+
+        // Assert
+        assertEquals(expectedUser, actualUser);
+    }
+
+    @Test
+    public void testInternalFindUserByEmail_whenUserNotFound() {
+        // Arrange
+        String email = "test@example.com";
+        when(userRepositoryMock.findByEmailIgnoreCase(email)).thenReturn(Optional.empty());
+        assertThrows(UserException.class, () -> authenticationServiceMock.internalFindUserByEmail(email));
+        verify(userRepositoryMock, times(1)).findByEmailIgnoreCase(email);
     }
 }

@@ -49,12 +49,12 @@ public class PayStackServiceImpl implements PayStackService {
         return client.get()
                 .retrieve()
                 .bodyToMono(String.class)
-                .map(responseBody -> {
+                .<Data>handle((responseBody, sink) -> {
                     try {
-                        return mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                                .readValue(responseBody, CardEntity.class).getData();
+                        sink.next(mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                                .readValue(responseBody, CardEntity.class).getData());
                     } catch (JsonProcessingException exception) {
-                        throw new GenericException("Error processing response body: " + exception.getMessage());
+                        sink.error(new GenericException("Error processing response body: " + exception.getMessage()));
                     }
                 })
                 .block();
@@ -181,5 +181,43 @@ public class PayStackServiceImpl implements PayStackService {
         } catch (JsonProcessingException exception) {
             throw new GenericException("Error processing response body: " + exception.getMessage());
         }
+    }
+
+    @Override
+    public OrderResponse makePayments(OrderRequest order) throws JsonProcessingException {
+        log.info("Services Called");
+
+        String url = "https://api.paystack.co/page";
+        order.setRedirect_url("https://www.google.com");
+        order.setCollect_phone(true);
+        HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
+        String body = mapper.writeValueAsString(order);
+        RequestBody requestBody = RequestBody.create(body, MediaType.get("application/json"));
+        OkHttpClient client = new OkHttpClient();
+
+        String secretKey = "sk_test_e99dc49d3054c49911a51924f68fd6da6b3352b3";
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + secretKey)
+                .post(requestBody)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                assert response.body() != null;
+                String responseBody = response.body().string();
+                log.info("Data: " + responseBody);
+                OrderResponse orderResponse = mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                        .readValue(responseBody, OrderResponse.class);
+                orderResponse.setPaymentUrl("https://paystack.com/pay/" + orderResponse.getData().getSlug());
+                return orderResponse;
+            } else {
+                throw new GenericException("HTTP request was not successful. Response code: " + response.code());
+            }
+        } catch (IOException exception) {
+            throw new GenericException("Error processing response body: " + exception.getMessage());
+        }
+
     }
 }
