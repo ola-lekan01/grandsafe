@@ -207,7 +207,6 @@ public class PayStackServiceImpl implements PayStackService {
             if (response.isSuccessful()) {
                 assert response.body() != null;
                 String responseBody = response.body().string();
-                log.info("Data: " + responseBody);
                 OrderResponse orderResponse = mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                         .readValue(responseBody, OrderResponse.class);
                 orderResponse.setPaymentUrl("https://paystack.com/pay/" + orderResponse.getData().getSlug());
@@ -218,6 +217,5 @@ public class PayStackServiceImpl implements PayStackService {
         } catch (IOException exception) {
             throw new GenericException("Error processing response body: " + exception.getMessage());
         }
-
     }
 }

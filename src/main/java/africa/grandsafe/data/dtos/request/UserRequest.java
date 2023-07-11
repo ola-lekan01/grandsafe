@@ -33,6 +33,8 @@ public class UserRequest {
     @NotBlank(message = "Password can not be blank")
     private String password;
 
+    private String imageURL;
+
 
     public void setPhoneNumber(String phoneNumber) {
         Matcher matcher = getMatcher(phoneNumber);

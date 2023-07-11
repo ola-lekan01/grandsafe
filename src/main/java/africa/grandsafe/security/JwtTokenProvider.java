@@ -27,8 +27,7 @@ public class JwtTokenProvider {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, email);
     }
-    public String createToken(Map<String, Object> extraClaims,
-                                String subject){
+    public String createToken(Map<String, Object> extraClaims, String subject){
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(subject)
