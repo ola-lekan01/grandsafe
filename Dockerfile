@@ -1,14 +1,14 @@
 # Stage 1: Build the application
-FROM gradle:7.2-jdk11 AS build
+FROM gradle:7.2-jdk17 AS build
 WORKDIR /app
 
 # Copy the source code and build the application
 COPY build.gradle settings.gradle /app/
 COPY src /app/src/
-RUN gradle build --no-daemon
+RUN ./gradlew build --no-daemon
 
 # Stage 2: Run the application
-FROM adoptopenjdk:11-jre-hotspot
+FROM adoptopenjdk:17-jre-hotspot
 
 # Copy the JAR file from the build stage
 COPY --from=build /app/build/libs/*.jar /app.jar
