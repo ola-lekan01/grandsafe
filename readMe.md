@@ -1,15 +1,18 @@
 # grandsafe
 
-Thullo is a eletronic digital platform that helps individuals manage their funds more effectively. It provides a range of tools and features that make it easy to save, spend and manage funds from thier account.<br>
+grandsafe is a electronic digital platform that helps individuals manage their funds more 
+effectively. It provides a range of tools and features that make it easy to save, spend and
+manage funds from their grandsafe account.
+
 ***The API documentation is hosted [here]()***
-<br>
+
 ## Technologies Used
 - Java (Programming language)
 - Springboot (Framework used to develop the APIs)
 - Gradle (Dependency manager)
 - postgreSQL (Database for data storage)
 - JWT (Library for authentication)
-- Railway (Hosting service)
+- Render (Hosting service)
 - Spring Security (Framework used for security)
 
 ## Prerequisites
@@ -18,13 +21,12 @@ To build and run this project, you'll need:
 
 - Java JDK 11 or later
 - Spring Boot 3.0.5
-- Gradle 7.6
+- Gradle 7.6 or later
 
 ## Getting Started
 
 To get started with grandsafe, you will need to clone this repository to your local machine and set up the necessary dependencies.
 
-### Installation
 
 # Installation
 
@@ -34,10 +36,10 @@ To get started with grandsafe, you will need to clone this repository to your lo
     git clone https://github.com/your-username/grandsafe.git
     ```
 
-2. Create MySQL database
+2. Create PostgreSQL database
 
    ```bash
-   mysql> create database grandsafe
+   psql> create database grandsafe
    ```
 
 3. Configure database username and password
@@ -56,13 +58,18 @@ To get started with grandsafe, you will need to clone this repository to your lo
 
 
 ## Functional requirement
-
-- User story: I can register a new account
-- User story: I can log in
-- User story: I can sign out
-- User story: I can see my profile details
-- User story: I can edit my details including: photo, name, bio, phone, email and password
-- User story: I can upload a new photo or provide an image URL
+- User story: I can register a new grandsafe account
+- User story: I can log in to my grandsafe account
+- User story: I can see my grandsafe profile details 
+- User story: I can edit my grandsafe profile details including: photo, name, phone, email and password
+- User story: I have an account number that serves as my grandsafe wallet 
+- User story: I can add my bank cards to my grandsafe account
+- User story: I can deposit money to my grandsafe wallet from my cards
+- User story: I can create saving plan to auto-debit my card to my grandsafe wallet
+- User story: I can get all my saving plan that I am currently subscribed
+- User story: I can make withdrawals from my grandsafe wallet to my bank account
+- User story: I can check my grandsafe wallet account balance
+- User story: I can use my grandsafe wallet balance to pay some basic utility bills
 
 ## Non-Functional Requirements
 
@@ -74,7 +81,7 @@ The following non-functional requirements must be met:
 
 ## Contributing
 
-If you would like to contribute to THullo, please follow these guidelines:
+If you would like to contribute to grandsafe, please follow these guidelines:
 
 1. Fork this repository to your own account
 2. Create a branch for your feature: `git checkout -b feature/your-feature`

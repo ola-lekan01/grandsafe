@@ -14,6 +14,9 @@ import africa.grandsafe.exceptions.TokenException;
 import africa.grandsafe.exceptions.UserException;
 import africa.grandsafe.service.AuthenticationService;
 import africa.grandsafe.service.EmailService;
+import africa.grandsafe.service.PayStackService;
+import africa.grandsafe.service.impl.OrderRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,7 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final EmailService emailService;
+    private final PayStackService service;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRequest userRequest) {
@@ -77,7 +81,7 @@ public class AuthenticationController {
             JwtTokenResponse authenticationDetail = authenticationService.login(loginRequest);
             return new ResponseEntity<>(new ApiResponse(true, "User is successfully logged in",
                     request.getRequestURL().toString(), authenticationDetail), HttpStatus.OK);
-        }catch (UserException exception){
+        } catch (UserException exception) {
             return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
@@ -155,6 +159,17 @@ public class AuthenticationController {
         } catch (TokenException | UserException e) {
             return new ResponseEntity<>(new ApiResponse
                     (false, e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @PostMapping("/checkout/payments")
+    public ResponseEntity<?> makePayment(@RequestBody OrderRequest request) {
+        try {
+            return new ResponseEntity<>(service.makePayments(request).getPaymentUrl(), HttpStatus.OK);
+        } catch (JsonProcessingException exception) {
+            return new ResponseEntity<>(new ApiResponse
+                    (false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

@@ -53,26 +53,4 @@ public class SecurityConfig {
                 .exceptionHandling();
         return http.build();
     }
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity
-//                .csrf()
-//                .disable()
-//                .cors()
-//                .and()
-//                .authorizeHttpRequests()
-//                .requestMatchers(AUTH_WHITELIST)
-//                .permitAll()
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .authenticationProvider(authenticationProvider)
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-//                .exceptionHandling();
-//        return httpSecurity.build();
-//    }
 }

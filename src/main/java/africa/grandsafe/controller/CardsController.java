@@ -24,7 +24,6 @@ import java.util.List;
 @RequestMapping("api/v1/card")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "BearerAuth")
-
 public class CardsController {
     private final CardService cardService;
 

@@ -2,12 +2,14 @@ package africa.grandsafe.utils.cardentity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
+@RequiredArgsConstructor
 public class Data {
     private String bin;
     private String brand;

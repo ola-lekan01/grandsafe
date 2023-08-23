@@ -6,7 +6,6 @@ import africa.grandsafe.data.dtos.request.TokenRefreshRequest;
 import africa.grandsafe.data.dtos.request.UserRequest;
 import africa.grandsafe.data.dtos.response.JwtTokenResponse;
 import africa.grandsafe.data.dtos.response.TokenResponse;
-import africa.grandsafe.data.enums.Role;
 import africa.grandsafe.data.models.AppUser;
 import africa.grandsafe.data.models.Token;
 import africa.grandsafe.data.repositories.AppUserRepository;
@@ -17,7 +16,9 @@ import africa.grandsafe.exceptions.UserException;
 import africa.grandsafe.security.JwtTokenProvider;
 import africa.grandsafe.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,18 +27,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import static africa.grandsafe.data.enums.Role.USER;
 import static africa.grandsafe.data.enums.TokenType.*;
-import static africa.grandsafe.utils.Utils.isNullOrEmpty;
-import static africa.grandsafe.utils.Utils.isValidToken;
+import static africa.grandsafe.utils.Utils.*;
 import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
-
     private final AppUserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
@@ -52,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AuthException(String.format("%s is already in use", userRequest.getEmail()));
         }
         AppUser user = modelMapper.map(userRequest, AppUser.class);
-        user.setRole(Role.USER);
+        user.setRole(USER);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return saveAUser(user);
     }
@@ -71,6 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         AppUser user = vToken.getUser();
         user.setEmailVerified(true);
+        user.setWalletNumber(extractSubstring(user.getPhoneNumber()));
         saveAUser(user);
         tokenRepository.delete(vToken);
     }
@@ -119,9 +122,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Cacheable("users")
     public AppUser internalFindUserByEmail(String email) throws UserException {
-        return userRepository.findByEmailIgnoreCase(email).orElseThrow(
-                () -> new UserException(format("user not found with email %s", email)));
+        AppUser user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (Objects.isNull(user)) throw new UserException(format("user not found with email %s", email));
+        return user;
     }
 
     @Override
@@ -145,11 +150,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private Token generateNewToken(String token, String tokenType) throws TokenException {
-        Token vCode = getAToken(token, tokenType);
-        vCode.updateToken(UUID.randomUUID().toString(), tokenType);
-        return tokenRepository.save(vCode);
-    }
 
     @Override
     public TokenResponse createPasswordResetTokenForUser(String email) throws AuthException {
@@ -188,7 +188,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return token;
         else throw new TokenException("Refresh token was expired. Please make a new sign in request");
     }
-
 
     @Override
     public void saveResetPassword(PasswordRequest request) throws TokenException, AuthException {

@@ -28,7 +28,9 @@ public class AppUser extends RepresentationModel<AppUser>{
     private String lastName;
     @Column(nullable = false)
     private String email;
+    @Column(nullable = false)
     private String phoneNumber;
+    private String walletNumber;
     private String imageUrl;
     private Boolean emailVerified = false;
     @JsonIgnore

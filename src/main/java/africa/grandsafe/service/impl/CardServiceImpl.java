@@ -1,7 +1,9 @@
 package africa.grandsafe.service.impl;
 
 import africa.grandsafe.data.dtos.request.AddCardRequest;
+import africa.grandsafe.data.dtos.request.UserRequest;
 import africa.grandsafe.data.dtos.response.CardResponse;
+import africa.grandsafe.data.dtos.response.OnBoardingResponse;
 import africa.grandsafe.data.models.AppUser;
 import africa.grandsafe.data.models.Card;
 import africa.grandsafe.data.repositories.AppUserRepository;
@@ -23,7 +25,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
-    private final ModelMapper modelMapper;
+    private final ModelMapper mapper;
     private final CardRepository cardRepository;
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -32,17 +34,18 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public CardResponse addCard(UserPrincipal userPrincipal, AddCardRequest addCardRequest) throws UserException {
-        if (cardRepository.findByCardNumberIgnoreCase(addCardRequest.getCardNumber()).isEmpty()) throw new GenericException("Card already exists");
+        if (cardRepository.findByCardNumberIgnoreCase(addCardRequest.getCardNumber()).isPresent())
+            throw new GenericException("Card already exists");
         AppUser user = internalFindUserByEmail(userPrincipal.getEmail());
         Data cardDetails = payStackService.validateCardDetails(addCardRequest);
-        Card card = modelMapper.map(addCardRequest, Card.class);
+        Card card = mapper.map(addCardRequest, Card.class);
         card.setBankName(cardDetails.getBank());
         card.setBrand(cardDetails.getBrand());
         card.setBin(cardDetails.getBin());
         card.setCard_type(cardDetails.getCard_type());
         card.setUser(user);
         Card savedCard = cardRepository.save(card);
-        return modelMapper.map(savedCard, CardResponse.class);
+        return mapper.map(savedCard, CardResponse.class);
     }
 
     private AppUser internalFindUserByEmail(String email) throws UserException {
@@ -64,7 +67,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public Card updateCard(String cardId, AddCardRequest updateCardRequest) {
         Card card = getCardById(cardId);
-        modelMapper.map(updateCardRequest, card);
+        mapper.map(updateCardRequest, card);
         return cardRepository.save(card);
     }
 
@@ -79,4 +82,27 @@ public class CardServiceImpl implements CardService {
             return "Card Deleted Successfully";
         } else throw new CardException("Incorrect password entered");
     }
+
+    public OnBoardingResponse onBoardUser(UserRequest request) {
+        return mapper.map(userRepository.save(mapper.map(request, AppUser.class)), OnBoardingResponse.class);
+    }
+
+    public OnBoardingResponse onBoard(UserRequest request) {
+        AppUser user = new AppUser();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setImageUrl(request.getImageURL());
+        user.setPhoneNumber(request.getPhoneNumber());
+        AppUser savedUser = userRepository.save(user);
+
+        OnBoardingResponse response = new OnBoardingResponse();
+        response.setFirstName(savedUser.getFirstName());
+        response.setEmail(savedUser.getEmail());
+        response.setId(savedUser.getId());
+        return response;
+    }
+
+
 }
