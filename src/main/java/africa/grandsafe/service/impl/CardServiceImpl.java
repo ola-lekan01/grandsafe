@@ -34,7 +34,8 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public CardResponse addCard(UserPrincipal userPrincipal, AddCardRequest addCardRequest) throws UserException {
-        if (cardRepository.findByCardNumberIgnoreCase(addCardRequest.getCardNumber()).isPresent()) throw new GenericException("Card already exists");
+        if (cardRepository.findByCardNumberIgnoreCase(addCardRequest.getCardNumber()).isPresent())
+            throw new GenericException("Card already exists");
         AppUser user = internalFindUserByEmail(userPrincipal.getEmail());
         Data cardDetails = payStackService.validateCardDetails(addCardRequest);
         Card card = mapper.map(addCardRequest, Card.class);
@@ -82,11 +83,11 @@ public class CardServiceImpl implements CardService {
         } else throw new CardException("Incorrect password entered");
     }
 
-    public OnBoardingResponse onBoardUser(UserRequest request){
+    public OnBoardingResponse onBoardUser(UserRequest request) {
         return mapper.map(userRepository.save(mapper.map(request, AppUser.class)), OnBoardingResponse.class);
     }
 
-    public OnBoardingResponse onBoard(UserRequest request){
+    public OnBoardingResponse onBoard(UserRequest request) {
         AppUser user = new AppUser();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -102,4 +103,6 @@ public class CardServiceImpl implements CardService {
         response.setId(savedUser.getId());
         return response;
     }
+
+
 }

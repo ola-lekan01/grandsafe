@@ -19,6 +19,5 @@ public interface PayStackService {
     List<BankListData> getListOfBanks() throws IOException;
     AccountDetail getAccountName(String accountNumber, String bankCode) throws IOException;
     InitiateTransferData initiateTransfer(InitiateTransferRequest transfer) throws IOException;
-
     OrderResponse makePayments(OrderRequest order) throws JsonProcessingException;
 }
